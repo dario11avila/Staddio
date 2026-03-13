@@ -128,7 +128,7 @@ export default function DashboardPage() {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{"⚽"}</span>
-                <span className="font-bold">Stappdium</span>
+                <span className="font-bold">Staddio</span>
               </div>
               <div className="flex items-center gap-2">
                 <Link href="/operator">

@@ -93,7 +93,7 @@ export const BADGES: Badge[] = [
   { id: "guardian", emoji: "🛡️", name: "Guardián del Estadio", description: "Reportaste tu primer incidente de seguridad" },
   { id: "social", emoji: "💬", name: "Fan Social", description: "Enviaste más de 50 mensajes en el chat" },
   { id: "streak", emoji: "🔥", name: "En Racha", description: "3 pedidos en un solo partido" },
-  { id: "vip", emoji: "👑", name: "VIP", description: "Alcanzaste el nivel Stappdium Elite" },
+  { id: "vip", emoji: "👑", name: "VIP", description: "Alcanzaste el nivel Staddio Elite" },
 ];
 
 export const CHAT_CHANNELS: { id: ChatChannel; name: string; emoji: string; description: string }[] = [

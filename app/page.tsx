@@ -105,13 +105,13 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/90 to-[#004d2b]">
+    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/90 to-[#7f1d1d]">
       {/* Hero Section */}
       <div className="flex flex-col items-center px-6 pt-12 pb-8 text-center">
         <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl backdrop-blur-sm">
           <span>{"⚽"}</span>
         </div>
-        <h1 className="text-4xl font-black tracking-tight text-white">Stappdium</h1>
+        <h1 className="text-4xl font-black tracking-tight text-white">Staddio</h1>
         <p className="mt-2 text-sm font-medium text-white/70">
           Estadio Akron • FIFA World Cup 2026
         </p>

@@ -1,11 +1,11 @@
 {
-  "name": "Stappdium - FIFA World Cup 2026",
-  "short_name": "Stappdium",
+  "name": "Staddio - FIFA World Cup 2026",
+  "short_name": "Staddio",
   "description": "Tu super app del estadio para el Mundial 2026",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#006B3C",
+  "theme_color": "#dc2626",
   "orientation": "portrait",
   "icons": [
     {
