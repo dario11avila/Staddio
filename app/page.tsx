@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Shield, Check, Loader2, User, Phone, Mail, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -108,8 +109,8 @@ export default function AuthPage() {
     <div className="min-h-screen bg-gradient-brand-full">
       {/* Hero Section */}
       <div className="flex flex-col items-center px-6 pt-12 pb-8 text-center">
-        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl backdrop-blur-sm">
-          <span>{"⚽"}</span>
+        <div className="relative mb-4 h-24 w-24 shrink-0 overflow-hidden rounded-3xl bg-white/15 backdrop-blur-sm">
+          <Image src="/staddio-logo.png" alt="Staddio" fill className="object-cover" priority sizes="96px" />
         </div>
         <h1 className="text-4xl font-black tracking-tight text-white">Staddio</h1>
         <p className="mt-2 text-sm font-medium text-white/70">
