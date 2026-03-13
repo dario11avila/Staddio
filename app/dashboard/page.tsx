@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
@@ -127,7 +128,7 @@ export default function DashboardPage() {
             {/* Top Bar */}
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{"⚽"}</span>
+                <Image src="/staddio-logo.png" alt="Staddio" width={36} height={36} className="h-9 w-9 shrink-0 object-cover rounded-md" />
                 <span className="font-bold">Staddio</span>
               </div>
               <div className="flex items-center gap-2">
