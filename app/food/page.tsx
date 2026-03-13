@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   ShoppingBag, Plus, Check, Wifi, WifiOff, Minus, Trash2,
-  CreditCard, Banknote, Loader2, ChevronRight
+  CreditCard, Banknote, Loader2, ChevronRight, CalendarDays, Calendar
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import { Button } from "@/components/ui/button";
@@ -16,16 +16,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
+import { cn, randomUUID } from "@/lib/utils";
 import { 
   isLoggedIn, getUser, getCart, addToCart, updateCartQuantity, 
   clearCart, getCartTotal, addOrder, generateOrderNumber, generateValidationCode 
 } from "@/lib/storage";
 import { FOOD_ITEMS, PICKUP_WINDOWS, MATCHES } from "@/lib/data";
-import type { FoodItem, CartItem, PickupWindow, Order } from "@/lib/types";
+import type { FoodItem, CartItem, PickupWindow, Order, Match } from "@/lib/types";
 import { toast } from "sonner";
 
 type ViewState = "menu" | "confirmed";
+type OrderTiming = "today" | "in_advance";
 
 const CATEGORIES = [
   { id: "burger", label: "Burgers", emoji: "🍔" },
@@ -45,15 +46,34 @@ export default function FoodPage() {
   const [addedItemId, setAddedItemId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   
+  // Pedir hoy vs con anticipación
+  const [orderTiming, setOrderTiming] = useState<OrderTiming>("today");
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
+
   // Checkout form
   const [fanName, setFanName] = useState("");
   const [seat, setSeat] = useState("");
   const [pickupWindow, setPickupWindow] = useState<PickupWindow>("halftime");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cash">("card");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [cardName, setCardName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   
   // Confirmed order
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+
+  const matchForOrder = (): Match => {
+    if (orderTiming === "today") return MATCHES[0];
+    const m = MATCHES.find(m => m.id === selectedMatchId);
+    return m ?? MATCHES[0];
+  };
+
+  const formatMatchDate = (dateStr: string) => {
+    const d = new Date(dateStr + "T12:00:00");
+    return d.toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -108,6 +128,17 @@ export default function FoodPage() {
     updateCartQuantity(itemId, 0);
   };
 
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s/g, "").replace(/\D/g, "").slice(0, 16);
+    return v.replace(/(\d{4})/g, "$1 ").trim();
+  };
+
+  const formatExpiry = (value: string) => {
+    const v = value.replace(/\D/g, "").slice(0, 4);
+    if (v.length >= 2) return `${v.slice(0, 2)}/${v.slice(2)}`;
+    return v;
+  };
+
   const handleCheckout = async () => {
     if (!fanName.trim()) {
       toast.error("Ingresa tu nombre");
@@ -117,15 +148,34 @@ export default function FoodPage() {
       toast.error("Ingresa tu asiento");
       return;
     }
+    if (paymentMethod === "card") {
+      if (!cardNumber.replace(/\s/g, "").match(/^\d{13,19}$/)) {
+        toast.error("Ingresa un número de tarjeta válido");
+        return;
+      }
+      if (!cardExpiry.match(/^\d{2}\/\d{2}$/)) {
+        toast.error("Ingresa la fecha de vencimiento (MM/AA)");
+        return;
+      }
+      if (!cardCvv.match(/^\d{3,4}$/)) {
+        toast.error("Ingresa el CVV (3 o 4 dígitos)");
+        return;
+      }
+      if (!cardName.trim()) {
+        toast.error("Ingresa el nombre como aparece en la tarjeta");
+        return;
+      }
+    }
     
     setSubmitting(true);
     await new Promise(r => setTimeout(r, 1500));
     
+    const match = matchForOrder();
     const order: Order = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       orderNumber: generateOrderNumber(),
-      matchId: MATCHES[0].id,
-      matchLabel: `${MATCHES[0].team1.flag} ${MATCHES[0].team1.code} vs ${MATCHES[0].team2.code} ${MATCHES[0].team2.flag}`,
+      matchId: match.id,
+      matchLabel: `${match.team1.flag} ${match.team1.code} vs ${match.team2.code} ${match.team2.flag}`,
       fanName,
       seat,
       pickupWindow,
@@ -242,7 +292,7 @@ export default function FoodPage() {
   return (
     <AppShell>
       <div className="min-h-screen">
-        {/* Header */}
+        {/* Header fijo: solo título y categorías */}
         <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
             <h1 className="text-xl font-bold">Pedir Comida</h1>
@@ -260,28 +310,128 @@ export default function FoodPage() {
               )}
             </div>
           </div>
-          
-          {/* Category Tabs */}
-          <div className="mx-auto max-w-2xl px-4 pb-3">
-            <Tabs value={category} onValueChange={setCategory}>
-              <TabsList className="w-full justify-start overflow-x-auto">
-                {CATEGORIES.map(cat => (
-                  <TabsTrigger key={cat.id} value={cat.id} className="gap-1">
-                    <span>{cat.emoji}</span>
-                    <span className="hidden sm:inline">{cat.label}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
+          {(orderTiming === "today" || selectedMatchId) && (
+            <div className="mx-auto max-w-2xl px-4 pb-3">
+              <Tabs value={category} onValueChange={setCategory}>
+                <TabsList className="w-full justify-start overflow-x-auto">
+                  {CATEGORIES.map(cat => (
+                    <TabsTrigger key={cat.id} value={cat.id} className="gap-1">
+                      <span>{cat.emoji}</span>
+                      <span className="hidden sm:inline">{cat.label}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
+          )}
         </div>
-        
-        {/* Menu Items */}
-        <div className="mx-auto max-w-2xl space-y-3 p-4 pb-32">
+
+        {/* Contenido con scroll: opción de pedido + menú */}
+        <div className="mx-auto max-w-2xl p-4 pb-32 space-y-6">
+          {/* ¿Para cuándo es tu pedido? (parte del scroll) */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">¿Para cuándo es tu pedido?</p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setOrderTiming("today");
+                  setSelectedMatchId(null);
+                }}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 px-4 text-sm font-medium transition-colors",
+                  orderTiming === "today"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-background hover:bg-muted/50"
+                )}
+              >
+                <Calendar className="h-4 w-4" />
+                Partido de hoy
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderTiming("in_advance")}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl border py-3 px-4 text-sm font-medium transition-colors",
+                  orderTiming === "in_advance"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-background hover:bg-muted/50"
+                )}
+              >
+                <CalendarDays className="h-4 w-4" />
+                Pedir con anticipación
+              </button>
+            </div>
+
+            {orderTiming === "in_advance" && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Elige el partido para el que quieres pedir</p>
+                <div className="grid gap-2">
+                  {MATCHES.map(m => {
+                    const isSelected = selectedMatchId === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setSelectedMatchId(m.id)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                          isSelected
+                            ? "border-primary bg-primary/10 ring-1 ring-primary/30"
+                            : "border-border hover:border-primary/50 hover:bg-muted/30"
+                        )}
+                      >
+                        <span className="text-lg shrink-0">{m.team1.flag}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm truncate">
+                            {m.team1.code} vs {m.team2.code}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatMatchDate(m.date)} • {m.time} • {m.stadium}
+                          </p>
+                        </div>
+                        <span className="text-lg shrink-0">{m.team2.flag}</span>
+                        {isSelected && <Check className="h-5 w-5 text-primary shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedMatchId && (
+                  <p className="text-xs text-muted-foreground">
+                    Tu pedido se preparará para este partido. Ya puedes agregar items al carrito.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {orderTiming === "in_advance" && selectedMatchId && (() => {
+              const m = MATCHES.find(x => x.id === selectedMatchId);
+              if (!m) return null;
+              return (
+                <div className="flex items-center gap-2 rounded-lg bg-primary/10 border border-primary/20 px-3 py-2 text-sm">
+                  <CalendarDays className="h-4 w-4 shrink-0 text-primary" />
+                  <span className="truncate">
+                    Pedido para: {m.team1.flag} {m.team1.code} vs {m.team2.code} {m.team2.flag} — {formatMatchDate(m.date)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMatchId(null)}
+                    className="text-muted-foreground hover:text-foreground shrink-0 text-xs"
+                  >
+                    Cambiar
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Menu Items: solo si es hoy o ya eligió partido */}
+          {(orderTiming === "today" || selectedMatchId) && (
+        <div className="space-y-3">
           {filteredItems.map(item => (
             <Card key={item.id} className="overflow-hidden transition-all hover:shadow-md">
               <CardContent className="flex items-center gap-4 p-4">
-                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-muted text-3xl">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-muted text-3xl">
                   {item.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -322,6 +472,8 @@ export default function FoodPage() {
             </Card>
           ))}
         </div>
+          )}
+        </div>
         
         {/* Floating Cart Button */}
         {cartCount > 0 && (
@@ -343,7 +495,20 @@ export default function FoodPage() {
                   <SheetHeader>
                     <SheetTitle>Tu pedido</SheetTitle>
                   </SheetHeader>
-                  
+                  {/* Partido para el que es el pedido */}
+                  {(() => {
+                    const m = matchForOrder();
+                    return (
+                      <div className="mt-2 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground">
+                        Pedido para: {m.team1.flag} {m.team1.code} vs {m.team2.code} {m.team2.flag}
+                        {orderTiming === "in_advance" && (
+                          <span className="block text-xs mt-0.5">
+                            {formatMatchDate(m.date)} • {m.time}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="mt-4 flex flex-col h-full overflow-hidden">
                     <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                       {/* Cart Items */}
@@ -440,6 +605,7 @@ export default function FoodPage() {
                           <Label>Método de pago</Label>
                           <div className="grid grid-cols-2 gap-2">
                             <button
+                              type="button"
                               onClick={() => setPaymentMethod("card")}
                               className={cn(
                                 "flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors",
@@ -452,6 +618,7 @@ export default function FoodPage() {
                               <span>Tarjeta</span>
                             </button>
                             <button
+                              type="button"
                               onClick={() => setPaymentMethod("cash")}
                               className={cn(
                                 "flex items-center gap-2 rounded-lg border p-3 text-sm transition-colors",
@@ -468,6 +635,55 @@ export default function FoodPage() {
                             <p className="text-xs text-muted-foreground">
                               Paga al repartidor cuando llegue a tu asiento
                             </p>
+                          )}
+                          {paymentMethod === "card" && (
+                            <div className="mt-4 space-y-3 rounded-lg border border-border bg-muted/30 p-4">
+                              <p className="text-sm font-medium">Datos de la tarjeta</p>
+                              <div className="space-y-2">
+                                <Label className="text-xs">Número de tarjeta</Label>
+                                <Input
+                                  placeholder="1234 5678 9012 3456"
+                                  value={cardNumber}
+                                  onChange={e => setCardNumber(formatCardNumber(e.target.value))}
+                                  maxLength={19}
+                                  className="font-mono"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                  <Label className="text-xs">Vencimiento (MM/AA)</Label>
+                                  <Input
+                                    placeholder="12/28"
+                                    value={cardExpiry}
+                                    onChange={e => setCardExpiry(formatExpiry(e.target.value))}
+                                    maxLength={5}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-xs">CVV</Label>
+                                  <Input
+                                    placeholder="123"
+                                    value={cardCvv}
+                                    onChange={e => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                    maxLength={4}
+                                    type="password"
+                                    inputMode="numeric"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs">Nombre en la tarjeta</Label>
+                                <Input
+                                  placeholder="Como aparece en la tarjeta"
+                                  value={cardName}
+                                  onChange={e => setCardName(e.target.value)}
+                                />
+                              </div>
+                              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                <CreditCard className="h-3 w-3" />
+                                Tus datos están protegidos. No guardamos el número completo de tu tarjeta.
+                              </p>
+                            </div>
                           )}
                         </div>
                         
