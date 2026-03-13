@@ -9,14 +9,14 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Stappdium - FIFA World Cup 2026',
+  title: 'Staddio - FIFA World Cup 2026',
   description: 'Tu super app del estadio para el Mundial 2026. Pide comida, navega el estadio, reporta incidentes y gana recompensas.',
   generator: 'v0.app',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Stappdium',
+    title: 'Staddio',
   },
   icons: {
     icon: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#006B3C',
+  themeColor: '#dc2626',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

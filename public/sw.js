@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stappdium-v1';
+const CACHE_NAME = 'staddio-v1';
 const urlsToCache = [
   '/',
   '/dashboard',
@@ -91,13 +91,13 @@ async function syncOrders() {
 // Push notifications (placeholder for future implementation)
 self.addEventListener('push', (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'Nueva notificación de Stappdium',
+    body: event.data ? event.data.text() : 'Nueva notificación de Staddio',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     vibrate: [100, 50, 100],
   };
   
   event.waitUntil(
-    self.registration.showNotification('Stappdium', options)
+    self.registration.showNotification('Staddio', options)
   );
 });

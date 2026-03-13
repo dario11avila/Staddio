@@ -19,7 +19,7 @@ export const LEVELS = [
   { name: "Super Fan", minPoints: 150, color: "bg-green-500" },
   { name: "Ultra", minPoints: 300, color: "bg-purple-500" },
   { name: "Leyenda", minPoints: 500, color: "bg-orange-500" },
-  { name: "Stappdium Elite", minPoints: 1000, color: "bg-yellow-500" },
+  { name: "Staddio Elite", minPoints: 1000, color: "bg-yellow-500" },
 ] as const;
 
 // Food types
