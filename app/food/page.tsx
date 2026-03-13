@@ -491,8 +491,8 @@ export default function FoodPage() {
                   </Button>
                 </SheetTrigger>
                 
-                <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl">
-                  <SheetHeader>
+                <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl px-4 sm:px-6">
+                  <SheetHeader className="px-0">
                     <SheetTitle>Tu pedido</SheetTitle>
                   </SheetHeader>
                   {/* Partido para el que es el pedido */}
