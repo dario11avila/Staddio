@@ -79,7 +79,7 @@ export default function RewardsPage() {
         <div className="mx-auto max-w-2xl p-4 space-y-6">
           {/* Main Points Card */}
           <Card className="overflow-hidden">
-            <div className="bg-gradient-to-r from-primary to-primary/80 p-6 text-white">
+            <div className="bg-gradient-brand p-6 text-white">
               <div className="text-center">
                 <p className="text-4xl font-black">{user.points}</p>
                 <p className="text-sm opacity-80">puntos acumulados</p>

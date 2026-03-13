@@ -227,7 +227,7 @@ export default function ReportPage() {
               </div>
               
               <Button 
-                className="w-full bg-red-600 hover:bg-red-700" 
+                className="w-full bg-gradient-brand hover:opacity-90 text-white" 
                 size="lg"
                 onClick={handleSubmit}
                 disabled={submitting}

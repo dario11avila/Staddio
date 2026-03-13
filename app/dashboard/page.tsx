@@ -122,7 +122,7 @@ export default function DashboardPage() {
     <AppShell>
       <div className="min-h-screen">
         {/* Header Banner */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 px-4 pb-6 pt-4 text-white">
+        <div className="bg-gradient-brand-horizontal px-4 pb-6 pt-4 text-white">
           <div className="mx-auto max-w-2xl">
             {/* Top Bar */}
             <div className="mb-4 flex items-center justify-between">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                     </span>
                     <span className="text-2xl">{currentMatch.team2.flag}</span>
                   </div>
-                  <Badge className="animate-pulse bg-red-500 text-white">
+                  <Badge className="animate-pulse bg-gradient-brand text-white">
                     EN VIVO
                   </Badge>
                 </div>

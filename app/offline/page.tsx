@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function OfflinePage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/10 to-background p-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#F63049]/10 via-[#D02752]/5 to-background p-6">
       <div className="mx-auto max-w-md text-center">
         <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-muted mx-auto">
           <WifiOff className="h-12 w-12 text-muted-foreground" />

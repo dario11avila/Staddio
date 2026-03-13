@@ -105,7 +105,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/90 to-[#7f1d1d]">
+    <div className="min-h-screen bg-gradient-brand-full">
       {/* Hero Section */}
       <div className="flex flex-col items-center px-6 pt-12 pb-8 text-center">
         <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 text-5xl backdrop-blur-sm">
@@ -144,9 +144,9 @@ export default function AuthPage() {
                     />
                   </div>
                   
-                  <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-800">
+                  <div className="rounded-lg bg-secondary p-3 text-sm text-secondary-foreground">
                     <p className="font-medium">{"¿Qué es FanID?"}</p>
-                    <p className="mt-1 text-xs text-blue-600">
+                    <p className="mt-1 text-xs text-secondary-foreground/70">
                       Es tu identificación oficial de FIFA para acceder al Mundial 2026. 
                       Lo obtuviste al comprar tu boleto.
                     </p>
