@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
+import { cn, randomUUID } from "@/lib/utils";
 import { isLoggedIn, getUser, getChatMessages, addChatMessage } from "@/lib/storage";
 import { CHAT_CHANNELS, DEMO_CHAT_MESSAGES } from "@/lib/data";
 import type { ChatChannel, ChatMessage, User } from "@/lib/types";
@@ -37,7 +37,7 @@ export default function ChatPage() {
       const now = new Date();
       demoMessages.forEach((msg, index) => {
         const message: ChatMessage = {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           channel,
           userId: msg.fanId,
           userName: msg.userName,
@@ -88,7 +88,7 @@ export default function ChatPage() {
     if (!newMessage.trim()) return;
     
     const message: ChatMessage = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       channel: activeChannel,
       userId: user.fanId,
       userName: user.name,

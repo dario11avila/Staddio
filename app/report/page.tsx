@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
+import { cn, randomUUID } from "@/lib/utils";
 import { isLoggedIn, getUser, addReport } from "@/lib/storage";
 import { INCIDENT_TYPES, STADIUM_SECTORS } from "@/lib/data";
 import type { IncidentType, IncidentReport } from "@/lib/types";
@@ -53,7 +53,7 @@ export default function ReportPage() {
     
     const user = getUser();
     const report: IncidentReport = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       userId: user?.fanId || "anonymous",
       userName: anonymous ? "Anónimo" : (user?.name || "Usuario"),
       type: selectedType,

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { cn, randomUUID } from "@/lib/utils";
 import { getOrders, setOrders, addOrder, generateOrderNumber, generateValidationCode } from "@/lib/storage";
 import { FOOD_ITEMS, MATCHES, PICKUP_WINDOWS } from "@/lib/data";
 import type { Order, OrderStatus } from "@/lib/types";
@@ -44,7 +44,7 @@ export default function OperatorPage() {
     if (allOrders.length === 0) {
       const demoOrders: Order[] = [
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           orderNumber: generateOrderNumber(),
           matchId: MATCHES[0].id,
           matchLabel: `${MATCHES[0].team1.flag} ${MATCHES[0].team1.code} vs ${MATCHES[0].team2.code} ${MATCHES[0].team2.flag}`,
@@ -64,7 +64,7 @@ export default function OperatorPage() {
           validationCode: generateValidationCode(),
         },
         {
-          id: crypto.randomUUID(),
+          id: randomUUID(),
           orderNumber: generateOrderNumber(),
           matchId: MATCHES[0].id,
           matchLabel: `${MATCHES[0].team1.flag} ${MATCHES[0].team1.code} vs ${MATCHES[0].team2.code} ${MATCHES[0].team2.flag}`,

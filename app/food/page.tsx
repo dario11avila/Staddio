@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
+import { cn, randomUUID } from "@/lib/utils";
 import { 
   isLoggedIn, getUser, getCart, addToCart, updateCartQuantity, 
   clearCart, getCartTotal, addOrder, generateOrderNumber, generateValidationCode 
@@ -122,7 +122,7 @@ export default function FoodPage() {
     await new Promise(r => setTimeout(r, 1500));
     
     const order: Order = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       orderNumber: generateOrderNumber(),
       matchId: MATCHES[0].id,
       matchLabel: `${MATCHES[0].team1.flag} ${MATCHES[0].team1.code} vs ${MATCHES[0].team2.code} ${MATCHES[0].team2.flag}`,
